@@ -135,6 +135,7 @@ else
     passwordhash=$(echo $passwordfile $passsalt | _hash)
     if [[ $passhash == $passwordhash ]]; then
         echo "unlocked with password"
+        export password=$passwordfile
     fi
 fi
 
