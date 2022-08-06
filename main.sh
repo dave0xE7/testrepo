@@ -2,6 +2,15 @@
 
 source common.sh
 
+if [ -f config.sh ]; then
+    source config.sh
+else
+    echo "no config file found"
+    # echo "create one with changepass"
+    ChangePassword
+    # exit
+fi
+
 function _Init () {
     if ! [ -d bare ]; then
         git init --bare bare
@@ -23,24 +32,17 @@ function _Init () {
     fi
 }
 
-if ! [ ${password} ]; then
-    if [ -f passphrase ]; then
-        export passphrase=$(cat passphrase)
-    fi
-else
-    # read -p "password required: " passphrase
-    # export passphrase=$passphrase
-    Unlock
-fi
 
 function Unlock () {
     echo "Unlocking"
     echo ""
-    read -s -p "enter password: " password
+    read -s -p "enter password: " passphrase
     echo ""
-    passhash=$(echo $password | _hash)
-    if [[ $passhash == $(cat passphrase) ]]; then
-        export password=$password
+    password=$(echo $passphrase | _hash)
+    passwordhash=$(echo $password $passsalt | _hash)
+    if [[ $passhash == $passwordhash ]]; then
+        # export password=$password
+        echo $password > password
         echo "password correct!"
         echo "unlocked!"
     else
@@ -60,8 +62,12 @@ function ChangePassword () {
     echo ""
     if [[ $new1 == $new2 ]]; then
         export password=$new1
-        passhash=$(echo $new1 | _hash)
-        echo "$passhash" > passphrase
+        password=$(echo $new1 | _hash)
+        passsalt=$(date +%s | _hash)
+        passhash=$(echo $password $passsalt | _hash)
+        echo "passsalt=$passsalt" > config.sh
+        echo "passhash=$passhash" >> config.sh
+        # echo "password=$password" >> config.sh
         echo "password changed successfully!"
     else
         echo "passwords do not match!"
@@ -111,6 +117,26 @@ function _show_info () {
     # git -C bare remote -v
     echo ""
 }
+
+# if ! [[ "${password}" ]]; then
+#     if [ -f passphrase ]; then
+#         export passphrase=$(cat passphrase)
+#     fi
+# else
+#     # read -p "password required: " passphrase
+#     # export passphrase=$passphrase
+#     Unlock
+# fi
+
+if ! [ -f password ]; then
+    Unlock
+else
+    passwordfile=$(cat password)
+    passwordhash=$(echo $passwordfile $passsalt | _hash)
+    if [[ $passhash == $passwordhash ]]; then
+        echo "unlocked with password"
+    fi
+fi
 
 
 POSITIONAL=()
