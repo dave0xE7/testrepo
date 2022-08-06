@@ -87,6 +87,8 @@ function _Push () {
     git add --all
     git commit -m 'push'
     git push
+
+    echo "end------"
 }
 
 function _Pull () {
