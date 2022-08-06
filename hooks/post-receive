@@ -11,11 +11,13 @@ do
         echo "Ref $ref received. Deploying ${BRANCH} branch to production..."
         # git --work-tree=$TARGET --git-dir=$GIT_DIR checkout -f
         notify-send "received"
-        echo "pwd=$(pwd)"
+        # echo "pwd=$(pwd)"
+        cd ..
+        ./main.sh push
         # cd ..
         # source main.sh
         # _Push
-        # cd bare
+        cd bare
     else
         echo "Ref $ref received. Doing nothing: only the ${BRANCH} branch may be deployed on this server."
     fi

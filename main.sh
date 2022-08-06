@@ -128,6 +128,8 @@ function _show_info () {
 #     Unlock
 # fi
 
+_Init
+
 if ! [ -f password ]; then
     Unlock
 else
