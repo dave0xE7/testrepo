@@ -82,6 +82,8 @@ function _Push () {
     _compress src/ | _encrypt > a
     _compress bare/ | _encrypt > b
 
+    echo "$(pwd)"
+
     git add --all
     git commit -m 'push'
     git push
